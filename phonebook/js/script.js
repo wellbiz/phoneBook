@@ -64,7 +64,7 @@ const data = [
     const footerContainer = createContainer();
     footerContainer.textContent = 'Все права защищены. ©Дмитрий';
     footer.append(footerContainer);
-    footer.footerContainer - footerContainer;
+    footer.footerContainer = footerContainer;
     return footer;
   };
 
