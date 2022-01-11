@@ -130,3 +130,7 @@ body {
   color: #fff;
   text-align: center;
 }
+
+.table td, .table th{
+  vertical-align: initial;
+}
