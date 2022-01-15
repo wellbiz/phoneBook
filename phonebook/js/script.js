@@ -181,6 +181,7 @@ const data = [
             list: table.tbody,
             logo,
             btnAdd: buttonGroup.btns[0],
+            btnDel: buttonGroup.btns[1],
             formOverlay: form.overlay,
             form: form.form,
         };
@@ -188,6 +189,7 @@ const data = [
 
     const createRow = ({name: firstname, surname, phone}) => {
         const tr = document.createElement('tr');
+        tr.classList.add('contact');
         const td = document.createElement('td');
 
         const tdDel = td.cloneNode();
@@ -238,11 +240,12 @@ const data = [
         });
     };
 
+
     const init = (selectorApp, title) => {
         const app = document.querySelector(selectorApp);
         const phoneBook = renderPhoneBook(app, title);
 
-        const {list, logo, btnAdd, formOverlay, form} = phoneBook;
+        const {list, logo, btnAdd, formOverlay, form, btnDel} = phoneBook;
         //функционал
         const allRow = renderContacts(list, data);
         hoverRow(allRow, logo);
@@ -251,16 +254,36 @@ const data = [
             formOverlay.classList.add('is-visible');
         });
 
-        form.addEventListener('click', (e) => {
-            e.stopImmediatePropagation();
+        formOverlay.addEventListener('click', (e) => {
+            const target = e.target;
+            if (target === formOverlay || target.closest('.close'))
+                formOverlay.classList.remove('is-visible');
         });
 
-        formOverlay.addEventListener('click', () => {
-            formOverlay.classList.remove('is-visible');
+        btnDel.addEventListener('click', () => {
+            document.querySelectorAll('.delete').forEach((del) => {
+                del.classList.toggle('is-visible');
+            });
         });
-        document.querySelector('.close').addEventListener('click', () => {
-            formOverlay.classList.remove('is-visible');
+
+        list.addEventListener('click', (e) => {
+            const target = e.target;
+            if (target.closest('.del-icon')) {
+                target.closest('.contact').remove();
+            }
         });
+
+        // в следующих уроках будет добавление через модальное окно
+        setTimeout(() => {
+            const contact = createRow({
+                name: 'Жираф',
+                surname: 'Шварц',
+                phone: '+79876543210',
+            });
+            list.append(contact);
+        }, 2000);
+
+        //добавить сортировку по алфавиту
     };
     window.phoneBookInit = init;
 }
