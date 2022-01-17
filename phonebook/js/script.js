@@ -309,7 +309,7 @@ const data = [
         };
 
         // сортировка
-        rowsArray.sort(compare);
+        if (colNum === 1 || colNum === 2) rowsArray.sort(compare);
 
         tbody.append(...rowsArray);
     };
@@ -319,7 +319,7 @@ const data = [
             if (e.target.tagName != 'TH') return;
 
             let th = e.target;
-            if (th == 1 || th == 2) sortTh(th.cellIndex, th.dataset.type);
+            sortTh(th.cellIndex);
         });
     };
     const init = (selectorApp, title) => {
