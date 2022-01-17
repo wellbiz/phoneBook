@@ -319,7 +319,7 @@ const data = [
             if (e.target.tagName != 'TH') return;
 
             let th = e.target;
-            sortTh(th.cellIndex, th.dataset.type);
+            if (th == 1 || th == 2) sortTh(th.cellIndex, th.dataset.type);
         });
     };
     const init = (selectorApp, title) => {
