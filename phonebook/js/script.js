@@ -1,32 +1,43 @@
 'use strict';
+/*
+Необходимо добавлять контакты в localStorage, из js удалить их
+Для работы с localStorage написать три функции
+1) getStorage которая получает в виде аргумента ключ и по нему
+запрашивает данные из localStorage и возвращает их, если их нет то
+возвращает пустой массив
+2) setStorage получает ключ и объект в виде аргументов и дописывает
+данные в localStorage
+для этого с помощью getStorage необходимо данные получить, дописать
+объект в массив и отправить после этого данные в localStorage
+3) removeStorage получает в виде аргумента номер телефона, и удаляет
+контакт из localStorage, с логикой необходимо разобраться самостоятельно!
+Применить функции там где это необходимо
+Проверить весь функционал, после перезагрузки страницы, данные должны
+оставаться в таблице
+*/
 
-const data = [
-    {
-        name: 'Иван',
-        surname: 'Петров',
-        phone: '+79514545454',
-    },
-    {
-        name: 'Игорь',
-        surname: 'Семёнов',
-        phone: '+79999999999',
-    },
-    {
-        name: 'Семён',
-        surname: 'Иванов',
-        phone: '+79800252525',
-    },
-    {
-        name: 'Мария',
-        surname: 'Попова',
-        phone: '+79876543210',
-    },
-];
-
+/*
+setItem(key, value) – сохранить пару ключ/значение.
+getItem(key) – получить данные по ключу key.
+removeItem(key) – удалить данные с ключом key.
+clear() – удалить всё.
+key(index) – получить ключ на заданной позиции.
+length – количество элементов в хранилище.
+*/
 {
-    const addContactData = (contact) => {
-        data.push(contact);
-        console.log('data: ', data);
+    const addContactLocalStorage = (contact) => {
+        let contacts = [];
+        if (localStorage.length > 0) {
+            contacts = JSON.parse(localStorage.getItem('contacts'));
+        } else {
+            localStorage.setItem('contacts', JSON.stringify(contact));
+        }
+        if (contacts) {
+            localStorage.removeItem('contacts');
+            contacts.push(contact);
+            localStorage.setItem('contacts', JSON.stringify(contacts));
+        }
+        console.log(JSON.parse(localStorage.getItem('contacts')));
     };
     const createContainer = () => {
         const container = document.createElement('div');
@@ -100,12 +111,12 @@ const data = [
         thead.insertAdjacentHTML(
             'beforeend',
             `<tr>
-        <th class="delete">Удалить
-        <th>Имя
-        <th>Фамилия
-        <th>Телефон
-        <th>
-    </tr>`
+         <th class="delete">Удалить
+         <th>Имя
+         <th>Фамилия
+         <th>Телефон
+         <th>
+     </tr>`
         );
 
         const tbody = document.createElement('tbody');
@@ -124,19 +135,21 @@ const data = [
         form.insertAdjacentHTML(
             'beforeend',
             `<button class="close" type="button"></button>
-    <h2 class="form-title">Добавить контакт</h2>
-    <div class="form-group">
-    <label class="form-label" for="name">Имя:</label>
-    <input class="form-input" name="name" id="name" type="text" require>
-    </div>
-    <div class="form-group">
-    <label class="form-label" for="surname">Фамилия:</label>
-    <input class="form-input" name="surname" id="surname" type="text" require>
-    </div>
-    <div class="form-group">
-    <label class="form-label" for="phone">Телефон:</label>
-    <input class="form-input" name="phone" id="phone" type="number" require>
-    </div>`
+     <h2 class="form-title">Добавить контакт</h2>
+     <div class="form-group">
+     <label class="form-label" for="name">Имя:</label>
+     <input class="form-input" name="name" id="name" type="text" require>
+     </div>
+     <div class="form-group">
+     <label class="form-label" for="surname">Фамилия:</label>
+     <input class="form-input" name="surname" id="surname" type="text"
+require>
+     </div>
+     <div class="form-group">
+     <label class="form-label" for="phone">Телефон:</label>
+     <input class="form-input" name="phone" id="phone" type="number"
+require>
+     </div>`
         );
 
         const buttonGroup = createButtonsGroup([
@@ -226,22 +239,30 @@ const data = [
 
         return tr;
     };
-    const renderContacts = (el, data) => {
-        const allRow = data.map(createRow);
-        el.append(...allRow);
-        return allRow;
-    };
 
+    const renderContactsFromLocalStorage = (el) => {
+        let contacts = [];
+        if (localStorage.length > 0) {
+            contacts = JSON.parse(localStorage.getItem('contacts'));
+            const allRow = contacts.map(createRow);
+            el.append(...allRow);
+            return allRow;
+        } else {
+            return;
+        }
+    };
     const hoverRow = (allRow, logo) => {
         const text = logo.textContent;
-        allRow.forEach((contact) => {
-            contact.addEventListener('mouseenter', () => {
-                logo.textContent = contact.phoneLink.textContent;
+        if (allRow) {
+            allRow.forEach((contact) => {
+                contact.addEventListener('mouseenter', () => {
+                    logo.textContent = contact.phoneLink.textContent;
+                });
+                contact.addEventListener('mouseleave', () => {
+                    logo.textContent = text;
+                });
             });
-            contact.addEventListener('mouseleave', () => {
-                logo.textContent = text;
-            });
-        });
+        }
     };
 
     const modalControl = (btnAdd, formOverlay) => {
@@ -269,17 +290,53 @@ const data = [
             document.querySelectorAll('.delete').forEach((del) => {
                 del.classList.toggle('is-visible');
             });
+            /*
+дописать функционал по удалению телефона.
+алгоритм:
+1)взять номер телефона из DOM
+2)взять и распарсить массив контактов из localStorage
+3)создать пустой массив
+4)добавить в этот новый массив контакты, кроме контакта, взятого из DOM
+5) засунуть массив обратно в localStorage
+
+       */
         });
 
         list.addEventListener('click', (e) => {
             const target = e.target;
             if (target.closest('.del-icon')) {
+                const tr = target.closest('tr');
+                const firstname =
+                    tr.querySelector('td:nth-child(2)').textContent;
+                const surname =
+                    tr.querySelector('td:nth-child(3)').textContent;
+                const number = tr.querySelector('td:nth-child(4)').textContent;
+
+                const contact = {
+                    name: firstname,
+                    surname: surname,
+                    phone: number,
+                };
+
+                let contacts = JSON.parse(localStorage.getItem('contacts'));
+                let newContacts = [];
+
+                contacts.forEach((item) => {
+                    if (contacts.some((it) => contact != it)) {
+                        newContacts.push(item);
+                    }
+                });
+
+                console.log(newContacts);
                 target.closest('.contact').remove();
             }
         });
     };
 
-    const addContactPage = (contact, list) => {
+    //   const addContactPage = (contact, list) => {
+    //     list.append(createRow(contact));
+    //   };
+    const addContactPageFromLocalStorage = (contact, list) => {
         list.append(createRow(contact));
     };
     const formControl = (form, list, closeModal) => {
@@ -287,10 +344,38 @@ const data = [
             e.preventDefault();
             const formData = new FormData(e.target);
             const newContact = Object.fromEntries(formData);
-            addContactPage(newContact, list);
-            addContactData(newContact);
+            addContactPageFromLocalStorage(newContact, list);
+            addContactLocalStorage(newContact);
             closeModal();
             form.reset();
+        });
+    };
+
+    const sortTh = (colNum) => {
+        let tbody = document.querySelector('.table tbody');
+
+        let rowsArray = Array.from(tbody.rows);
+
+        let compare;
+
+        compare = function (rowA, rowB) {
+            return rowA.cells[colNum].innerHTML > rowB.cells[colNum].innerHTML
+                ? 1
+                : -1;
+        };
+
+        // сортировка
+        if (colNum === 1 || colNum === 2) rowsArray.sort(compare);
+
+        tbody.append(...rowsArray);
+    };
+    const sortingbyTH = () => {
+        const table = document.querySelector('.table');
+        table.addEventListener('click', (e) => {
+            if (e.target.tagName != 'TH') return;
+
+            let th = e.target;
+            sortTh(th.cellIndex);
         });
     };
     const init = (selectorApp, title) => {
@@ -299,23 +384,15 @@ const data = [
         const {list, logo, btnAdd, formOverlay, form, btnDel} =
             renderPhoneBook(app, title);
         //функционал
-        const allRow = renderContacts(list, data);
+        const allRow = renderContactsFromLocalStorage(list);
         const {closeModal} = modalControl(btnAdd, formOverlay);
         hoverRow(allRow, logo);
         deleteControl(btnDel, list);
+
         formControl(form, list, closeModal);
 
-        // в следующих уроках будет добавление через модальное окно
-        setTimeout(() => {
-            const contact = createRow({
-                name: 'Жираф',
-                surname: 'Шварц',
-                phone: '+79876543210',
-            });
-            list.append(contact);
-        }, 2000);
-
         //добавить сортировку по алфавиту
+        sortingbyTH();
     };
     window.phoneBookInit = init;
 }
