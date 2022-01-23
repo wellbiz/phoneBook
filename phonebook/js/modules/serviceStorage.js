@@ -15,7 +15,7 @@ const setStorage = (key, contact) => {
         contacts.push(contact);
         localStorage.setItem(key, JSON.stringify(contacts));
     }
-    console.log(JSON.parse(localStorage.getItem(key)));
+
 };
 
 const removeStorage = (key, contact) => {
